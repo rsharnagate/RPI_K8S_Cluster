@@ -1,1 +1,39 @@
 Link to setup RPi k8s cluster: https://www.youtube.com/watch?v=B2wAJ5FLOYw
+
+DB Schema
+---------
+1. tblCategory    
+Columns:
+    a. cid: Int, Unique, Primary
+    b. name: String
+    c. description: String
+    d. active: bool
+Endpoints:
+    a. POST <BASE_URL>/v1/categories - Insert new category
+    b. GET <BASE_URL>/v1/categories - Get all categories    
+    d. GET <BASE_URL>/v1/categories/{cid} - Get category
+    g. DELETE <BASE_URL>/v1/categories/{cid} - Delete category
+
+2. tblChannel
+Columns:
+    a. chid: Int, Unique, Primary
+    b. name: String
+    c. description: String
+    d. logo: String
+    e. cid: Int
+    f. active: bool
+Endpoints:
+    a. POST <BASE_URL>/v1/channels - Insert new channel 
+    b. GET <BASE_URL>/v1/channels - Get all channels
+    c. GET <BASE_URL>/v1/channels/category/{cid} - Get all channels belongs to category
+    d. GET <BASE_URL>/v1/channels/{chid}/number - Get channel by number
+    e. GET <BASE_URL>/v1/channels/{name}/name - Get channel by name    
+    f. PUT <BASE_URL>/v1/channels/{chid} - Update channel
+    g. DELETE <BASE_URL>/v1/channels/{chid} - Delete channel
+
+3. tblCommand
+Columns:
+    a. cid: Int, Unique, Primary
+    b. key: String,
+    c. active: bool
+
