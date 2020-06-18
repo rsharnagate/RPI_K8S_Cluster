@@ -2,12 +2,22 @@ Link to setup RPi k8s cluster: https://www.youtube.com/watch?v=B2wAJ5FLOYw
 
 DB Schema
 ---------
-1. tblCategory    
+
+1. Create database:
+Query:
+    CREATE DATABASE dbSL
+
+2. tblCategory    
 Columns:
     a. cid: Int, Unique, Primary
     b. name: String
-    c. description: String
     d. active: bool
+Query:
+    CREATE TABLE tblCategory (
+        cid INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        active BOOLEAN NOT NULL DEFAULT True
+    )
 Endpoints:
     a. POST <BASE_URL>/v1/categories - Insert new category
     b. GET <BASE_URL>/v1/categories - Get all categories    
@@ -18,10 +28,17 @@ Endpoints:
 Columns:
     a. chid: Int, Unique, Primary
     b. name: String
-    c. description: String
-    d. logo: String
-    e. cid: Int
-    f. active: bool
+    c. logo: String
+    d. cid: Int
+    e. active: bool
+Query:
+    CREATE TABLE tblChannel (
+        chid INT(6) UNSIGNED PRIMARY KEY,
+        name VARCHAR(50) NOT NULL,
+        logo VARCHAR(150) NOT NULL,
+        cid INT(6),
+        active BOOLEAN NOT NULL DEFAULT True
+    )
 Endpoints:
     a. POST <BASE_URL>/v1/channels - Insert new channel 
     b. GET <BASE_URL>/v1/channels - Get all channels
@@ -36,4 +53,17 @@ Columns:
     a. cid: Int, Unique, Primary
     b. key: String,
     c. active: bool
+Query:
+    CREATE TABLE tblCommand (
+        cid INT(6) UNSIGNED PRIMARY KEY,
+        `key` VARCHAR(10) NOT NULL,
+        active BOOLEAN NOT NULL DEFAULT True
+    )
+Endpoints:
+    a. POST <BASE_URL>/v1/commands - Insert new command 
+    b. GET <BASE_URL>/v1/commands - Get all commands    
+    c. GET <BASE_URL>/v1/commands/{cid}/cid - Get command by id
+    d. GET <BASE_URL>/v1/commands/{key}/key - Get command by key    
+    e. PUT <BASE_URL>/v1/channels/{cid} - Update command
+    f. DELETE <BASE_URL>/v1/channels/{cid} - Delete command
 
