@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mosquitto
+spec:
+  selector:
+    matchLabels:
+      app: mosquitto
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+    spec:
+      containers:
+      - name: mosquitto
+        image: eclipse-mosquitto
+        imagePullPolicy: Always        
+        ports:
+        - containerPort: 9001
+        - containerPort: 1883
+        volumeMounts:
+        - name: nfs-persistent-volume
+          mountPath: /mosquitto/config
+          subPath: mqtt/config        
+        - name: nfs-persistent-volume
+          mountPath: /mosquitto/data
+          subPath: mqtt/data
+        - name: nfs-persistent-volume
+          mountPath: /mosquitto/log
+          subPath: mqtt/log
+      volumes:
+      - name: nfs-persistent-volume
+        persistentVolumeClaim:
+          claimName: nfs-persistent-volume-claim
+       

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql 
+        image: jsurf/rpi-mariadb        
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: Sam123456
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: nfs-persistent-volume
+          mountPath: /var/lib/mysql
+          subPath: mysql
+      volumes:
+      - name: nfs-persistent-volume
+        persistentVolumeClaim:
+          claimName: nfs-persistent-volume-claim
