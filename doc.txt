@@ -21,8 +21,9 @@ Query:
 Endpoints:
     a. POST <BASE_URL>/v1/categories - Insert new category
     b. GET <BASE_URL>/v1/categories - Get all categories    
-    d. GET <BASE_URL>/v1/categories/{cid} - Get category
-    g. DELETE <BASE_URL>/v1/categories/{cid} - Delete category
+    c. GET <BASE_URL>/v1/categories/{cid} - Get category
+    d. PUT <BASE_URL>/v1/categories/{cid} - Update category
+    e. DELETE <BASE_URL>/v1/categories/{cid} - Delete category
 
 2. tblChannel
 Columns:
