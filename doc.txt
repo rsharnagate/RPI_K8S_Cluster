@@ -51,12 +51,14 @@ Endpoints:
 
 3. tblCommand
 Columns:
-    a. cid: Int, Unique, Primary
+    a. id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    a. cid: String,
     b. key: String,
     c. active: bool
 Query:
     CREATE TABLE tblCommand (
-        cid INT(6) UNSIGNED PRIMARY KEY,
+        id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        cid VARCHAR(10) NOT NULL,
         `key` VARCHAR(10) NOT NULL,
         active BOOLEAN NOT NULL DEFAULT True
     )
