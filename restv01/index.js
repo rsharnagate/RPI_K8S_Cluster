@@ -14,10 +14,9 @@ app.set('env', NODE_ENV);
 app.use(logger('tiny'));
 app.use(bodyParser.json());
 
-//app.use('/', require(path.join(__dirname, 'routes')));
-
-var category = require('./routes/category');
-app.use('/v1/categories', category);
+app.use('/v1/categories', require('./routes/category'));
+app.use('/v1/channels', require('./routes/channel'));
+app.use('/v1/commands', require('./routes/command'));
 
 app.use((req, res, next) => {
     const err = new Error(`${req.method} ${req.url} not found`);
