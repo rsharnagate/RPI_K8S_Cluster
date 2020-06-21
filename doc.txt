@@ -70,3 +70,17 @@ Endpoints:
     e. PUT <BASE_URL>/v1/channels/{cid} - Update command
     f. DELETE <BASE_URL>/v1/channels/{cid} - Delete command
 
+4. Publish command
+{
+    "topic": "/cbr/fan1",
+    "msg": [
+        {
+            "cmd": "ON",
+            "cron": "30 23 * * *"
+        },
+        {
+            "cmd": "OFF",
+            "cron": "30 6 * * *"
+        }
+    ]
+}

@@ -17,6 +17,7 @@ app.use(bodyParser.json());
 app.use('/v1/categories', require('./routes/category'));
 app.use('/v1/channels', require('./routes/channel'));
 app.use('/v1/commands', require('./routes/command'));
+app.use('/v1/publish', require('./routes/publish'));
 
 app.use((req, res, next) => {
     const err = new Error(`${req.method} ${req.url} not found`);
