@@ -1,13 +1,13 @@
 var mysql = require('mysql2');
-var config = require('./config.json');
+const config = require('/sl/rest/config/config.json');
 
 var pool = mysql.createPool({
-    host: config.host,
-    user: config.user,
-    database: config.database,
-    password: config.password,
-    waitForConnections: true,
-    connectionLimit: 10,
+    host: config.MYSQL_HOST || "172.17.0.2",
+    user: config.MYSQL_USER || "root",
+    database: config.MYSQL_DB || "dbSL",
+    password: config.MYSQL_PSWD || "123456",
+    connectionLimit: config.MYSQL_POOL_LIMIT || 10,
+    waitForConnections: true,    
     queueLimit: 0
 });
 

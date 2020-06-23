@@ -1,15 +1,15 @@
 var mqtt = require('mqtt');
-var config = require('./config.json')
+const config = require('/sl/rest/config/config.json');
 
-var client = mqtt.connect(config.host, {
-    clientId: config.client,
-    //username: config.user,
-    //password: config.password,
+var client = mqtt.connect(config.MQTT_HOST || "mqtt://127.0.0.1:1883", {
+    clientId: config.MQTT_CLINTID || "RESTMqttClient",
+    username: config.MQTT_USER || undefined,
+    password: config.MQTT_PSWD || undefined,
     clean: true
 });
 
 client.on("connect", () => {    
-    console.log("REST connected with MQTT broker");
+    console.log(`REST MQTT client ${client.clientId} connected with broker`);
 });
 
 client.on("error", (err) => {
@@ -17,12 +17,8 @@ client.on("error", (err) => {
 });
 
 client.on("message", (topic, message) => {
-    
+    var msg = JSON.stringify(message);
+    console.log(`Message received on topic ${topic}, Msg: ${msg}`);
 });
-
-client.on("packetsend", (message) => {
-    console.log(message);
-});
-
 
 module.exports = client;

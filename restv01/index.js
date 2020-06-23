@@ -1,15 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
-const path = require('path');
+const config = require('/sl/rest/config/config.json');
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
-const NODE_ENV = process.env.NODE_ENV || 'development';
-
-app.set('port', PORT);
-app.set('env', NODE_ENV);
+const PORT = config.REST_PORT || 5000;
+const NODE_ENV = config.REST_ENV || 'development';
 
 app.use(logger('tiny'));
 app.use(bodyParser.json());
@@ -37,7 +34,7 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
     console.log(
-        `Server started on port ${app.get('port')} | Environment : ${app.get('env')}`);
+        `Server started on port ${PORT} | Environment : ${NODE_ENV}`);
 });
 
 

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest
+  labels:
+    app: rest
+    type: front-end
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rest
+  template:
+    metadata:
+      labels:
+        app: rest
+    spec:
+      containers:
+      - name: rest 
+        image: rsharnagate/sl-rest:v1      
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: nfs-persistent-volume
+          mountPath: /sl/rest/config
+          subPath: rest/config
+      imagePullSecrets:
+      - name: regcred
+      volumes:
+      - name: nfs-persistent-volume
+        persistentVolumeClaim:
+          claimName: nfs-persistent-volume-claim

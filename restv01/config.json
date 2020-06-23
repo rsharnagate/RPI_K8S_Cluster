@@ -1,0 +1,15 @@
+{
+    "REST_PORT": 5000,
+    "REST_ENV": "production",
+
+    "MYSQL_HOST": "mysql.default.svc.cluster.local",
+    "MYSQL_DB": "dbSL",
+    "MYSQL_USER": "root",
+    "MYSQL_PSWD": "123456",
+    "MYSQL_POOL_LIMIT": 10,
+
+    "MQTT_HOST": "mqtt://mosquitto.default.svc.cluster.local",
+    "MQTT_CLINTID": "RESTMqttClient01",
+    "MQTT_USER": "",
+    "MQTT_PSWD": ""
+}

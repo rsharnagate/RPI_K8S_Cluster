@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto
+spec:
+  type: ClusterIP
+  ports:  
+  - port: 1883
+  selector:
+    app: mosquitto
+    type: back-end
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -6,18 +18,19 @@ spec:
   selector:
     matchLabels:
       app: mosquitto
+      type: back-end
   replicas: 1
   template:
     metadata:
       labels:
         app: mosquitto
+        type: back-end
     spec:
       containers:
       - name: mosquitto
         image: eclipse-mosquitto
         imagePullPolicy: Always        
-        ports:
-        - containerPort: 9001
+        ports:        
         - containerPort: 1883
         volumeMounts:
         - name: nfs-persistent-volume
