@@ -1,12 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
-const config = require('/sl/rest/config/config.json');
 
 const app = express();
 
-const PORT = config.REST_PORT || 5000;
-const NODE_ENV = config.REST_ENV || 'development';
+const PORT = process.env.PORT || 5000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
 app.use(logger('tiny'));
 app.use(bodyParser.json());

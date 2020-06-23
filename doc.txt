@@ -84,3 +84,7 @@ Endpoints:
         }
     ]
 }
+
+Docker xbuild:
+docker buildx build --push --platform linux/arm/v7 --tag rsharnagate/sl-rest:v1 .
+
