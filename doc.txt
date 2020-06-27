@@ -86,5 +86,15 @@ Endpoints:
 }
 
 Docker xbuild:
-docker buildx build --push --platform linux/arm/v7 --tag rsharnagate/sl-rest:v1 .
+docker buildx build --push --platform linux/arm/v7 --tag rsharnagate/sl-rest:lts-alpine3.9 .
+
+MySQL details
+----------------
+PUID:                 1000
+PGID:                 1000
+TZ:                   Asia/Calcutta
+MYSQL_ROOT_PASSWORD:  my-root-password
+MYSQL_DATABASE:       dbSL
+MYSQL_USER:           my-user
+MYSQL_PASSWORD:       my-password
 

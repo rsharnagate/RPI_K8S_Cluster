@@ -1,6 +1,6 @@
 FROM arm32v7/node:lts-alpine3.9
 
-ENV PORT=5000
+ENV PORT=8081
 ENV NODE_ENV=production
 
 RUN mkdir -p /sl/rest/config
@@ -18,6 +18,3 @@ COPY ./restv01/ /work/
 EXPOSE ${PORT}
 
 CMD node .
-
-
-

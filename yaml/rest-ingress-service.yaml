@@ -3,8 +3,11 @@ kind: Service
 metadata:
   name: rest-ingress
   labels:
-    app: rest-ingress
+    app: rest
 spec:
   type: LoadBalancer
   selector:
-    
+    app: rest
+  ports:
+  - port: 5000
+    targetPort: 5000

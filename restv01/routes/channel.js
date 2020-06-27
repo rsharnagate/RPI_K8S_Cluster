@@ -1,140 +1,270 @@
-var pool = require('../db/dbMySql')
-var express = require('express');
-var router = express.Router();
+import { getConnection } from '../db/dbMySql';
+import { Router } from 'express';
+import { BadRequestResult, Result, OkResult } from '../utility';
 
-router.post('/', (req, res) => {
-    var chId = req.body.chid;
-    var name = req.body.name;
-    var logo = req.body.logo;
-    var cid = req.body.cid;
+var router = Router();
 
-    var sql = `INSERT INTO tblChannel(chid,name,logo,cid,active) 
-    SELECT ${chId},'${name}','${logo}',tblCategory.cid,True FROM tblCategory 
-    WHERE cid = ${cid} and active=True`;
+router.post('/', async (req, res, next) => {
+    let conn;
+    try {
 
-    pool.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("API failed to process request");
-        }
+        var badRequestMsg = "";
 
-        if(results.affectedRows <= 0) {
-            res.status(404).send(`Channel category ${cid} not found`);
-        } else {
-            res.status(201).send(`Channel ${cid} created`);               
+        if (!req.body.chid) badRequestMsg = badRequestMsg.concat('\nChannel id');
+        if (!req.body.name) badRequestMsg = badRequestMsg.concat('\nChannel name');
+        if (!req.body.logo) badRequestMsg = badRequestMsg.concat('\nChannel logo');
+        if (!req.body.cid) badRequestMsg = badRequestMsg.concat('\nChannel category id');
+
+        if (badRequestMsg) {
+            badRequestMsg = 'Mandatory fields are missing:'.concat(badRequestMsg);
+            var badRequest = BadRequestResult(badRequestMsg);
+            res.status(400).json(badRequest);
         }        
-    });    
+
+        var chId = req.body.chid;
+        var name = req.body.name;
+        var logo = req.body.logo;
+        var cid = req.body.cid;
+
+        // establish connection with MariaDB
+        conn = await getConnection();
+
+        // Create new query
+        var query = `INSERT INTO tblChannel(chid,name,logo,cid,active) 
+        SELECT ${chId},'${name}','${logo}',tblCategory.cid,True FROM tblCategory 
+        WHERE cid = ${cid} and active=True`;
+
+        // Execute the query
+        var dbRes = await conn.query(query);
+
+        // Respond to the user
+        var result = Result(query, dbRes, `Channel ${name} created`);
+        res.status(201).json(result);
+
+    } catch (err) {        
+        return next(err);
+    } finally {
+        if (conn) return conn.release();
+    }   
 });
 
-router.get('/', (req, res) => {
-    pool.query(`SELECT chid, name, logo, cid FROM tblChannel WHERE active=True`, 
-    (err, results) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("API failed to process request");
-        }
+router.get('/', async (req, res, next) => {
+    let conn;
+    try {
 
-        if (results.length > 0) {
-            res.status(200).send(results);
+        // establish connection with MariaDB
+        conn = await getConnection();
+
+        // Create new query
+        var query = `SELECT chid, name, logo, cid FROM tblChannel WHERE active=True`;
+
+        // Execute the query
+        var dbRes = await conn.query(query);
+
+        if (dbRes.length > 0) {
+            var result = OkResult(query, dbRes);
+            res.status(200).json(result);
         } else {
-            res.status(404).send(`Channel category not found`);
-        }        
-    });    
+            var result = Result(query, dbRes, `Channels not found`);
+            res.status(404).json(result);
+        }
+    } catch (err) {        
+        return next(err);
+    } finally {
+        if (conn) return conn.release();
+    }     
 });
 
-router.get('/category/:cid', (req, res) => {
-    var cid = req.params.cid;
+router.get('/category/:cid', async (req, res, next) => {
+    let conn;
+    try {
 
-    pool.query(`SELECT chid, name, logo FROM tblChannel WHERE active=True and cid=${cid}`, 
-    (err, results) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("API failed to process request");
+        // Check required parameter
+        if (!req.params.cid) {
+            var badRequest = BadRequestResult('Category id is not valid');
+            res.status(400).json(badRequest);
         }
 
-        if (results.length > 0) {
-            res.status(200).send(results);
+        var cid = req.params.cid;
+
+        // establish connection with MariaDB
+        conn = await getConnection();
+
+        // Create new query
+        var query = `SELECT chid, name, logo FROM tblChannel WHERE active=True and cid=${cid}`;
+
+        // Execute the query
+        var dbRes = await conn.query(query);
+
+        if (dbRes.length > 0) {
+            var result = OkResult(query, dbRes);
+            res.status(200).json(result);
         } else {
-            res.status(404).send(`Channel category ${cid} not found`);
-        }        
-    });    
+            var result = Result(query, dbRes, `Channels not found for category ${cid}`);
+            res.status(404).json(result);
+        }
+    } catch (err) {        
+        return next(err);
+    } finally {
+        if (conn) return conn.release();
+    }   
 });
 
-router.get('/:chid/number', (req, res) => {
-    var chid = req.params.chid;
+router.get('/:chid/number', async (req, res, next) => {
+    let conn;
+    try {
 
-    pool.query(`SELECT name, logo, cid FROM tblChannel WHERE active=True and chid=${chid}`, 
-    (err, results) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("API failed to process request");
+        // Check required parameter
+        if (!req.params.chid) {
+            var badRequest = BadRequestResult('Channel id is not valid');
+            res.status(400).json(badRequest);
         }
 
-        if (results.length > 0) {
-            res.status(200).send(results);
+        var chid = req.params.chid;
+
+        // establish connection with MariaDB
+        conn = await getConnection();
+
+        // Create new query
+        var query = `SELECT name, logo, cid FROM tblChannel WHERE active=True and chid=${chid}`;
+
+        // Execute the query
+        var dbRes = await conn.query(query);
+
+        if (dbRes.length > 0) {
+            var result = OkResult(query, dbRes);
+            res.status(200).json(result);
         } else {
-            res.status(404).send(`Channel ${chid} not found`);
-        }        
-    });    
+            var result = Result(query, dbRes, `Channel ${chid} not found`);
+            res.status(404).json(result);
+        }
+    } catch (err) {        
+        return next(err);
+    } finally {
+        if (conn) return conn.release();
+    }    
 });
 
-router.get('/:name/name', (req, res) => {
-    var name = req.params.name;
+router.get('/:name/name', async (req, res, next) => {
+    let conn;
+    try {
 
-    pool.query(`SELECT chid, name, logo, cid FROM tblChannel WHERE active=True and name LIKE '%${name}%'`, 
-    (err, results) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("API failed to process request");
+        // Check required parameter
+        if (!req.params.name) {
+            var badRequest = BadRequestResult('Channel name is not valid');
+            res.status(400).json(badRequest);
         }
 
-        if (results.length > 0) {
-            res.status(200).send(results);
+        var name = req.params.name;
+
+        // establish connection with MariaDB
+        conn = await getConnection();
+
+        // Create new query
+        var query = `SELECT chid, name, logo, cid FROM tblChannel WHERE active=True and name LIKE '%${name}%'`;
+
+        // Execute the query
+        var dbRes = await conn.query(query);
+
+        if (dbRes.length > 0) {
+            var result = OkResult(query, dbRes);
+            res.status(200).json(result);
         } else {
-            res.status(404).send(`Channel ${name} not found`);
-        }        
-    });    
+            var result = Result(query, dbRes, `Channel ${name} not found`);
+            res.status(404).json(result);
+        }
+    } catch (err) {        
+        return next(err);
+    } finally {
+        if (conn) return conn.release();
+    }    
 });
 
-router.put('/:chid', (req, res) => {
-    var chid = req.params.chid;
-    var cname = req.body.name;
-    var clogo = req.body.logo;
-    var cid = req.body.cid;
+router.put('/:chid', async (req, res, next) => {
+    let conn;
+    try {
 
-    var sql = `UPDATE tblCategory as category, tblChannel as channel
-    SET channel.name = '${cname}', channel.logo = '${clogo}', channel.cid = ${cid} 
-    WHERE channel.active = True and category.active = True and category.cid = ${cid} and chid = ${chid}`;
-
-    pool.query(sql, (err, results, fields) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("API failed to process request");
+        // Check required parameter
+        if (!req.params.chid) {
+            var badRequest = BadRequestResult('Channel id is not valid');
+            res.status(400).json(badRequest);
         }
 
-        if (results.affectedRows > 0) {
-            res.status(204).send();
+        var badRequestMsg = "";
+        
+        if (!req.body.name) badRequestMsg = badRequestMsg.concat('\nChannel name');
+        if (!req.body.logo) badRequestMsg = badRequestMsg.concat('\nChannel logo');
+        if (!req.body.cid) badRequestMsg = badRequestMsg.concat('\nChannel category id');
+
+        if (badRequestMsg) {
+            badRequestMsg = 'Mandatory fields are missing:'.concat(badRequestMsg);
+            var badRequest = BadRequestResult(badRequestMsg);
+            res.status(400).json(badRequest);
+        }
+
+        var chid = req.params.chid;
+        var cname = req.body.name;
+        var clogo = req.body.logo;
+        var cid = req.body.cid;
+
+        // establish connection with MariaDB
+        conn = await getConnection();
+
+        // Create new query
+        var query = `UPDATE tblCategory as category, tblChannel as channel
+        SET channel.name = '${cname}', channel.logo = '${clogo}', channel.cid = ${cid} 
+        WHERE channel.active = True and category.active = True and category.cid = ${cid} and chid = ${chid}`;
+
+        // Execute the query
+        var dbRes = await conn.query(query);
+
+        if (dbRes.affectedRows > 0) {
+            var result = Result(query, dbRes, `Channel updated successfully`);
+            res.status(204).json(result);
         } else {
-            res.status(404).send(`Channel category does not exists`);
-        }        
-    });    
+            var result = Result(query, dbRes, `Channel or channel category not found`);
+            res.status(404).json(result);
+        }
+    } catch (err) {        
+        return next(err);
+    } finally {
+        if (conn) return conn.release();
+    }   
 });
 
-router.delete('/:chid', (req, res) => {
-    var chid = req.params.chid;
-    pool.query(`UPDATE tblChannel SET active = False WHERE active = True and chid = ${chid}`, 
-    (err, results, fields) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send("API failed to process request");
+router.delete('/:chid', async (req, res, next) => {
+    let conn;
+    try {
+
+        // Check required parameter
+        if (!req.params.chid) {
+            var badRequest = BadRequestResult('Channel id is not valid');
+            res.status(400).json(badRequest);
         }
 
-        if (results.affectedRows > 0) {
-            res.status(204).send();
+        var chid = req.params.chid;
+
+        // establish connection with MariaDB
+        conn = await getConnection();
+
+        // Create new query
+        var query = `UPDATE tblChannel SET active = False WHERE active = True and chid = ${chid}`;
+
+        // Execute the query
+        var dbRes = await conn.query(query);
+
+        if (dbRes.affectedRows > 0) {
+            var result = Result(query, dbRes, `Channel disabled successfully`);
+            res.status(204).json(result);
         } else {
-            res.status(404).send(`Channel does not exists`);
-        }        
-    });    
+            var result = Result(query, dbRes, `Channel not found`);
+            res.status(404).json(result);
+        }
+    } catch (err) {        
+        return next(err);
+    } finally {
+        if (conn) return conn.release();
+    } 
 });
 
 

@@ -29,15 +29,27 @@ spec:
     spec:
       containers:
       - name: mysql 
-        image: jsurf/rpi-mariadb
+        image: linuxserver/mariadb
         env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Asia/Calcutta"
         - name: MYSQL_ROOT_PASSWORD
-          value: "123456"
+          value: "my-root-password"
+        - name: MYSQL_DATABASE
+          value: "dbSL"
+        - name: MYSQL_USER
+          value: "my-user"
+        - name: MYSQL_PASSWORD
+          value: "my-password"
         ports:
         - containerPort: 3306
         volumeMounts:
         - name: nfs-persistent-volume
-          mountPath: /var/lib/mysql
+          mountPath: /config
           subPath: mysql
       volumes:
       - name: nfs-persistent-volume

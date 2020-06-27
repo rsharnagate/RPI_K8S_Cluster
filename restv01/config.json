@@ -5,7 +5,7 @@
     "MYSQL_HOST": "mysql.default.svc.cluster.local",
     "MYSQL_DB": "dbSL",
     "MYSQL_USER": "root",
-    "MYSQL_PSWD": "123456",
+    "MYSQL_PSWD": "my-root-password",
     "MYSQL_POOL_LIMIT": 10,
 
     "MQTT_HOST": "mqtt://mosquitto.default.svc.cluster.local",
