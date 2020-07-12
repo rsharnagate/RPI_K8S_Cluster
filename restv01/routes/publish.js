@@ -1,6 +1,7 @@
 var pool = require('../db/dbMySql')
 var mqtt = require('../broker/mqtt');
 var express = require('express');
+
 var router = express.Router();
 
 router.post('/', (req, res) => {

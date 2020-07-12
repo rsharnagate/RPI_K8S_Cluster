@@ -1,8 +1,8 @@
-import { getConnection } from '../db/dbMySql';
-import { Router } from 'express';
-import { BadRequestResult, Result, OkResult } from '../utility';
+const mysql = require('../db/dbMySql');
+const express = require('express');
+const utility = require('../utility');
 
-var router = Router();
+var router = express.Router();
 
 router.post('/', async (req, res, next) => {
     let conn;
@@ -17,7 +17,7 @@ router.post('/', async (req, res, next) => {
         var cName = req.body.name;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `INSERT INTO tblCategory VALUES (0, '${cName}', True)`;
@@ -26,7 +26,7 @@ router.post('/', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         // Respond to the user
-        var result = Result(query, dbRes, `Channel category ${cName} created`);
+        var result = utility.Result(query, dbRes, `Channel category ${cName} created`);
         res.status(201).json(result);
 
     } catch (err) {        
@@ -41,7 +41,7 @@ router.get('/', async (req, res, next) => {
     try {
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `SELECT cid, name FROM tblCategory WHERE active = True`;
@@ -50,10 +50,10 @@ router.get('/', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.length > 0) {
-            var result = OkResult(query, dbRes);
+            var result = utility.OkResult(query, dbRes);
             res.status(200).json(result);
         } else {
-            var result = Result(query, dbRes, `Channel category not found`);
+            var result = utility.Result(query, dbRes, `Channel category not found`);
             res.status(404).json(result);
         }
     } catch (err) {        
@@ -69,14 +69,14 @@ router.get('/:cid', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.cid) {
-            var badRequest = BadRequestResult('Category id is not valid');
+            var badRequest = utility.BadRequestResult('Category id is not valid');
             res.status(400).json(badRequest);
         }
 
         var cid = req.params.cid;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `SELECT cid, name FROM tblCategory WHERE cid = ${cid} and active = True`;
@@ -85,10 +85,10 @@ router.get('/:cid', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.length > 0) {
-            var result = OkResult(query, dbRes);
+            var result = utility.OkResult(query, dbRes);
             res.status(200).json(result);
         } else {
-            var result = Result(query, dbRes, `Channel category not found`);
+            var result = utility.Result(query, dbRes, `Channel category not found`);
             res.status(404).json(result);
         }
     } catch (err) {        
@@ -104,12 +104,12 @@ router.put('/:cid', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.cid) {
-            var badRequest = BadRequestResult('Category id is not valid');
+            var badRequest = utility.BadRequestResult('Category id is not valid');
             res.status(400).json(badRequest);
         }
 
         if (!req.body.name) {
-            var badRequest = BadRequestResult('Category name is not valid');
+            var badRequest = utility.BadRequestResult('Category name is not valid');
             res.status(400).json(badRequest);
         }
 
@@ -117,7 +117,7 @@ router.put('/:cid', async (req, res, next) => {
         var cname = req.body.name;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `UPDATE tblCategory SET name = '${cname}' WHERE active = True and cid = ${cid}`;
@@ -126,10 +126,10 @@ router.put('/:cid', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.affectedRows > 0) {
-            var result = Result(query, dbRes, `Category updated successfully`);
+            var result = utility.Result(query, dbRes, `Category updated successfully`);
             res.status(204).json(result);
         } else {
-            var result = Result(query, dbRes, `Channel category not found`);
+            var result = utility.Result(query, dbRes, `Channel category not found`);
             res.status(404).json(result);
         }
     } catch (err) {        
@@ -145,14 +145,14 @@ router.delete('/:cid', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.cid) {
-            var badRequest = BadRequestResult('Category id is not valid');
+            var badRequest = utility.BadRequestResult('Category id is not valid');
             res.status(400).json(badRequest);
         }
 
         var cid = req.params.cid;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `UPDATE tblCategory SET active = False WHERE active = True and cid = ${cid}`;
@@ -161,10 +161,10 @@ router.delete('/:cid', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.affectedRows > 0) {
-            var result = Result(query, dbRes, `Category disabled successfully`);
+            var result = utility.Result(query, dbRes, `Category disabled successfully`);
             res.status(204).json(result);
         } else {
-            var result = Result(query, dbRes, `Channel category not found`);
+            var result = utility.Result(query, dbRes, `Channel category not found`);
             res.status(404).json(result);
         }
     } catch (err) {        
@@ -174,4 +174,4 @@ router.delete('/:cid', async (req, res, next) => {
     }   
 });
 
-export default router;
+module.exports = router;

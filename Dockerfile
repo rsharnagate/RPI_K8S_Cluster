@@ -1,7 +1,7 @@
 FROM arm32v7/node:lts-alpine3.9
 
-ENV PORT=8081
-ENV NODE_ENV=production
+ENV PORT 8081
+ENV NODE_ENV 'prod'
 
 RUN mkdir -p /sl/rest/config
 COPY ./restv01/config.json /sl/rest/config/config.json

@@ -4,7 +4,6 @@ metadata:
   name: rest
   labels:
     app: rest
-    type: front-end
 spec:
   replicas: 1
   selector:
@@ -17,9 +16,10 @@ spec:
     spec:
       containers:
       - name: rest 
-        image: rsharnagate/sl-rest:lts-alpine3.9
+        image: rsharnagate/sl-rest:rpi
+        imagePullPolicy: Always
         ports:
-        - containerPort: 5000
+        - containerPort: 8081
         volumeMounts:
         - name: nfs-persistent-volume
           mountPath: /sl/rest/config

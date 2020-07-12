@@ -1,8 +1,8 @@
-import { getConnection } from '../db/dbMySql';
-import { Router } from 'express';
-import { BadRequestResult, Result, OkResult } from '../utility';
+const mysql = require('../db/dbMySql');
+const express = require('express');
+const utility = require('../utility');
 
-var router = Router();
+var router = express.Router();
 
 router.post('/', async (req, res, next) => {
     let conn;
@@ -17,7 +17,7 @@ router.post('/', async (req, res, next) => {
 
         if (badRequestMsg) {
             badRequestMsg = 'Mandatory fields are missing:'.concat(badRequestMsg);
-            var badRequest = BadRequestResult(badRequestMsg);
+            var badRequest = utility.BadRequestResult(badRequestMsg);
             res.status(400).json(badRequest);
         }        
 
@@ -27,7 +27,7 @@ router.post('/', async (req, res, next) => {
         var cid = req.body.cid;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `INSERT INTO tblChannel(chid,name,logo,cid,active) 
@@ -38,7 +38,7 @@ router.post('/', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         // Respond to the user
-        var result = Result(query, dbRes, `Channel ${name} created`);
+        var result = utility.Result(query, dbRes, `Channel ${name} created`);
         res.status(201).json(result);
 
     } catch (err) {        
@@ -53,7 +53,7 @@ router.get('/', async (req, res, next) => {
     try {
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `SELECT chid, name, logo, cid FROM tblChannel WHERE active=True`;
@@ -62,10 +62,10 @@ router.get('/', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.length > 0) {
-            var result = OkResult(query, dbRes);
+            var result = utility.OkResult(query, dbRes);
             res.status(200).json(result);
         } else {
-            var result = Result(query, dbRes, `Channels not found`);
+            var result = utility.Result(query, dbRes, `Channels not found`);
             res.status(404).json(result);
         }
     } catch (err) {        
@@ -81,14 +81,14 @@ router.get('/category/:cid', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.cid) {
-            var badRequest = BadRequestResult('Category id is not valid');
+            var badRequest = utility.BadRequestResult('Category id is not valid');
             res.status(400).json(badRequest);
         }
 
         var cid = req.params.cid;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `SELECT chid, name, logo FROM tblChannel WHERE active=True and cid=${cid}`;
@@ -97,10 +97,10 @@ router.get('/category/:cid', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.length > 0) {
-            var result = OkResult(query, dbRes);
+            var result = utility.OkResult(query, dbRes);
             res.status(200).json(result);
         } else {
-            var result = Result(query, dbRes, `Channels not found for category ${cid}`);
+            var result = utility.Result(query, dbRes, `Channels not found for category ${cid}`);
             res.status(404).json(result);
         }
     } catch (err) {        
@@ -116,14 +116,14 @@ router.get('/:chid/number', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.chid) {
-            var badRequest = BadRequestResult('Channel id is not valid');
+            var badRequest = utility.BadRequestResult('Channel id is not valid');
             res.status(400).json(badRequest);
         }
 
         var chid = req.params.chid;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `SELECT name, logo, cid FROM tblChannel WHERE active=True and chid=${chid}`;
@@ -132,10 +132,10 @@ router.get('/:chid/number', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.length > 0) {
-            var result = OkResult(query, dbRes);
+            var result = utility.OkResult(query, dbRes);
             res.status(200).json(result);
         } else {
-            var result = Result(query, dbRes, `Channel ${chid} not found`);
+            var result = utility.Result(query, dbRes, `Channel ${chid} not found`);
             res.status(404).json(result);
         }
     } catch (err) {        
@@ -151,14 +151,14 @@ router.get('/:name/name', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.name) {
-            var badRequest = BadRequestResult('Channel name is not valid');
+            var badRequest = utility.BadRequestResult('Channel name is not valid');
             res.status(400).json(badRequest);
         }
 
         var name = req.params.name;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `SELECT chid, name, logo, cid FROM tblChannel WHERE active=True and name LIKE '%${name}%'`;
@@ -167,10 +167,10 @@ router.get('/:name/name', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.length > 0) {
-            var result = OkResult(query, dbRes);
+            var result = utility.OkResult(query, dbRes);
             res.status(200).json(result);
         } else {
-            var result = Result(query, dbRes, `Channel ${name} not found`);
+            var result = utility.Result(query, dbRes, `Channel ${name} not found`);
             res.status(404).json(result);
         }
     } catch (err) {        
@@ -186,7 +186,7 @@ router.put('/:chid', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.chid) {
-            var badRequest = BadRequestResult('Channel id is not valid');
+            var badRequest = utility.BadRequestResult('Channel id is not valid');
             res.status(400).json(badRequest);
         }
 
@@ -198,7 +198,7 @@ router.put('/:chid', async (req, res, next) => {
 
         if (badRequestMsg) {
             badRequestMsg = 'Mandatory fields are missing:'.concat(badRequestMsg);
-            var badRequest = BadRequestResult(badRequestMsg);
+            var badRequest = utility.BadRequestResult(badRequestMsg);
             res.status(400).json(badRequest);
         }
 
@@ -208,7 +208,7 @@ router.put('/:chid', async (req, res, next) => {
         var cid = req.body.cid;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `UPDATE tblCategory as category, tblChannel as channel
@@ -219,10 +219,10 @@ router.put('/:chid', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.affectedRows > 0) {
-            var result = Result(query, dbRes, `Channel updated successfully`);
+            var result = utility.Result(query, dbRes, `Channel updated successfully`);
             res.status(204).json(result);
         } else {
-            var result = Result(query, dbRes, `Channel or channel category not found`);
+            var result = utility.Result(query, dbRes, `Channel or channel category not found`);
             res.status(404).json(result);
         }
     } catch (err) {        
@@ -238,14 +238,14 @@ router.delete('/:chid', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.chid) {
-            var badRequest = BadRequestResult('Channel id is not valid');
+            var badRequest = utility.BadRequestResult('Channel id is not valid');
             res.status(400).json(badRequest);
         }
 
         var chid = req.params.chid;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `UPDATE tblChannel SET active = False WHERE active = True and chid = ${chid}`;
@@ -254,10 +254,10 @@ router.delete('/:chid', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         if (dbRes.affectedRows > 0) {
-            var result = Result(query, dbRes, `Channel disabled successfully`);
+            var result = utility.Result(query, dbRes, `Channel disabled successfully`);
             res.status(204).json(result);
         } else {
-            var result = Result(query, dbRes, `Channel not found`);
+            var result = utility.Result(query, dbRes, `Channel not found`);
             res.status(404).json(result);
         }
     } catch (err) {        

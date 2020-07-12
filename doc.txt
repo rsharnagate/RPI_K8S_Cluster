@@ -98,3 +98,17 @@ MYSQL_DATABASE:       dbSL
 MYSQL_USER:           my-user
 MYSQL_PASSWORD:       my-password
 
+---------------------------------------
+
+kubectl run -i --tty --rm debug --image=busybox --restart=Never -- sh
+
+---------------------------------------
+Create private registry credential
+
+kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=rsharnagate --docker-password=Sam123456#$ --docker-email=rakesh.sharnagate@gmail.com
+
+-----------------------------
+Get bash
+
+kubectl exec -t -i nginx-78f5d695bd-czm8z bash
+

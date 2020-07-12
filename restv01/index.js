@@ -5,7 +5,7 @@ const logger = require('morgan');
 const app = express();
 
 const PORT = process.env.PORT || 5000;
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const NODE_ENV = process.env.NODE_ENV || 'dev';
 
 app.use(logger('tiny'));
 app.use(bodyParser.json());

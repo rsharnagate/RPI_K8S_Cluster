@@ -1,8 +1,8 @@
-import { getConnection } from '../db/dbMySql';
-import { Router } from 'express';
-import { BadRequestResult, Result, OkResult } from '../utility';
+const mysql = require('../db/dbMySql');
+const express = require('express');
+const utility = require('../utility');
 
-var router = Router();
+var router = express.Router();
 
 router.post('/', async (req, res, next) => {
     let conn;
@@ -15,7 +15,7 @@ router.post('/', async (req, res, next) => {
 
         if (badRequestMsg) {
             badRequestMsg = 'Mandatory fields are missing:'.concat(badRequestMsg);
-            var badRequest = BadRequestResult(badRequestMsg);
+            var badRequest = utility.BadRequestResult(badRequestMsg);
             res.status(400).json(badRequest);
         }        
 
@@ -23,7 +23,7 @@ router.post('/', async (req, res, next) => {
         var ckey = req.body.key;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `INSERT INTO tblCommand VALUES (0, '${cid}', '${ckey}', True)`;
@@ -32,7 +32,7 @@ router.post('/', async (req, res, next) => {
         var dbRes = await conn.query(query);
 
         // Respond to the user
-        var result = Result(query, dbRes, `Command ${cid} created`);
+        var result = utility.Result(query, dbRes, `Command ${cid} created`);
         res.status(201).json(result);
         
     } catch (err) {        
@@ -47,7 +47,7 @@ router.get('/', async (req, res, next) => {
     try {
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = 'SELECT id, cid, `key` FROM tblCommand WHERE active = True';
@@ -57,10 +57,10 @@ router.get('/', async (req, res, next) => {
 
         // Respond to the user
         if (dbRes.length > 0) {
-            var result = OkResult(query, dbRes);
+            var result = utility.OkResult(query, dbRes);
             res.status(200).json(result);
         } else {
-            var result = Result(query, dbRes, `Commands not found`);
+            var result = utility.Result(query, dbRes, `Commands not found`);
             res.status(404).json(result);
         }        
     } catch (err) {        
@@ -76,14 +76,14 @@ router.get('/:cid/cid', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.cid) {
-            var badRequest = BadRequestResult('Command id is not valid');
+            var badRequest = utility.BadRequestResult('Command id is not valid');
             res.status(400).json(badRequest);
         }
 
         var cid = req.params.cid;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = "SELECT id, `key` FROM tblCommand WHERE cid = '" + cid + "' and active = True";
@@ -93,10 +93,10 @@ router.get('/:cid/cid', async (req, res, next) => {
 
         // Respond to the user
         if (dbRes.length > 0) {
-            var result = OkResult(query, dbRes);
+            var result = utility.OkResult(query, dbRes);
             res.status(200).json(result);
         } else {
-            var result = Result(query, dbRes, `Command not found`);
+            var result = utility.Result(query, dbRes, `Command not found`);
             res.status(404).json(result);
         }        
     } catch (err) {        
@@ -112,14 +112,14 @@ router.get('/:key/key', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.key) {
-            var badRequest = BadRequestResult('Command key is not valid');
+            var badRequest = utility.BadRequestResult('Command key is not valid');
             res.status(400).json(badRequest);
         }
 
         var ckey = req.params.key;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = "SELECT id, cid FROM tblCommand WHERE `key` = '" + ckey + "' and active = True";
@@ -129,10 +129,10 @@ router.get('/:key/key', async (req, res, next) => {
 
         // Respond to the user
         if (dbRes.length > 0) {
-            var result = OkResult(query, dbRes);
+            var result = utility.OkResult(query, dbRes);
             res.status(200).json(result);
         } else {
-            var result = Result(query, dbRes, `Command not found`);
+            var result = utility.Result(query, dbRes, `Command not found`);
             res.status(404).json(result);
         }        
     } catch (err) {        
@@ -148,7 +148,7 @@ router.put('/:id', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.id) {
-            var badRequest = BadRequestResult('Command id is not valid');
+            var badRequest = utility.BadRequestResult('Command id is not valid');
             res.status(400).json(badRequest);
         }
 
@@ -159,7 +159,7 @@ router.put('/:id', async (req, res, next) => {
 
         if (badRequestMsg) {
             badRequestMsg = 'Mandatory fields are missing:'.concat(badRequestMsg);
-            var badRequest = BadRequestResult(badRequestMsg);
+            var badRequest = utility.BadRequestResult(badRequestMsg);
             res.status(400).json(badRequest);
         }
 
@@ -168,7 +168,7 @@ router.put('/:id', async (req, res, next) => {
         var ckey = req.body.key;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = "UPDATE tblCommand SET cid = '" + cid + "', `key` = '" + ckey + "' WHERE active = True and id = " + id;
@@ -178,10 +178,10 @@ router.put('/:id', async (req, res, next) => {
 
         // Respond to the user
         if (dbRes.affectedRows > 0) {
-            var result = Result(query, dbRes, `Command updated successfully`);
+            var result = utility.Result(query, dbRes, `Command updated successfully`);
             res.status(204).json(result);
         } else {
-            var result = Result(query, dbRes, `Command not found`);
+            var result = utility.Result(query, dbRes, `Command not found`);
             res.status(404).json(result);
         }        
     } catch (err) {        
@@ -197,14 +197,14 @@ router.delete('/:id', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.id) {
-            var badRequest = BadRequestResult('Command id is not valid');
+            var badRequest = utility.BadRequestResult('Command id is not valid');
             res.status(400).json(badRequest);
         }
 
         var id = req.params.id;
 
         // establish connection with MariaDB
-        conn = await getConnection();
+        conn = await mysql.getConnection();
 
         // Create new query
         var query = `UPDATE tblCommand SET active = False WHERE active = True and id = '${id}'`;
@@ -214,10 +214,10 @@ router.delete('/:id', async (req, res, next) => {
 
         // Respond to the user
         if (dbRes.affectedRows > 0) {
-            var result = Result(query, dbRes, `Command disabled successfully`);
+            var result = utility.Result(query, dbRes, `Command disabled successfully`);
             res.status(204).json(result);
         } else {
-            var result = Result(query, dbRes, `Command not found`);
+            var result = utility.Result(query, dbRes, `Command not found`);
             res.status(404).json(result);
         }        
     } catch (err) {        
