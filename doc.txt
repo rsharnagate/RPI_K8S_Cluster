@@ -49,6 +49,28 @@ Endpoints:
     f. PUT <BASE_URL>/v1/channels/{chid} - Update channel
     g. DELETE <BASE_URL>/v1/channels/{chid} - Delete channel
 
+3. tblDeviceTopic
+Columns:
+    a. id: Int, Unique, Primary
+    b. device: String
+    c. topic: String
+    d. active: bool
+
+Query:
+    CREATE TABLE tblDeviceTopic (
+        id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        device VARCHAR(20) NOT NULL,
+        topic VARCHAR(20) NOT NULL,
+        active BOOLEAN NOT NULL DEFAULT True
+    )
+
+Endpoints:
+    a. POST <BASE_URL>/v1/devtops - Insert new device topic mapping
+    b. GET <BASE_URL>/v1/devtops - Get all device topic mapping
+    c. GET <BASE_URL>/v1/devtops/{device} - Get topic by device
+    f. PUT <BASE_URL>/v1/devtops/{device} - Update topic by device
+    g. DELETE <BASE_URL>/v1/devtops/{device} - Delete topic by device
+
 3. tblCommand
 Columns:
     a. id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -70,17 +92,19 @@ Endpoints:
     e. PUT <BASE_URL>/v1/channels/{cid} - Update command
     f. DELETE <BASE_URL>/v1/channels/{cid} - Delete command
 
-4. Publish command
+Eg. Publish command
 {
     "topic": "/cbr/fan1",
     "msg": [
         {
             "cmd": "ON",
-            "cron": "30 23 * * *"
+            "cron": "30 23 * * *",
+            "tag": ""
         },
         {
             "cmd": "OFF",
-            "cron": "30 6 * * *"
+            "cron": "30 6 * * *",
+            "tag": ""
         }
     ]
 }
@@ -112,3 +136,20 @@ Get bash
 
 kubectl exec -t -i nginx-78f5d695bd-czm8z bash
 
+-----------------------------------------------------------
+
+ sudo ssh -L 8001:127.0.0.1:8001 pi@192.168.1.100  
+
+Name:         admin-user-token-2tfwg
+Namespace:    kubernetes-dashboard
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: admin-user
+              kubernetes.io/service-account.uid: 1bb8b4a0-3930-49e7-96d1-c41820714de2
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1025 bytes
+namespace:  20 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6IjhoUDM1VXh4dkZaZTVTemJ1R1NxSmh0a2hqNENFOWtMc0JTT0FMQ3pSeEUifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLTJ0ZndnIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiIxYmI4YjRhMC0zOTMwLTQ5ZTctOTZkMS1jNDE4MjA3MTRkZTIiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.MeVPSSnAPORSIfe92taXZKDKuBiWX2MayCSOxrkyrFnvJ96Kpe0DJwFmBCOjHYjlRSiG6-tXlNb8r_sAaJulFCtbhcUEr130brErPMy56rETzMSudoQaj26LFLhls0zGkduVTcujD26OyWPrM7IHY2XlAyfUTv5rZoNR-faZHF_7DP8PQosDigKH4XifmqZuOZ1L0ZoLEpI80XDCUP5zHvOu2Yxo1GxWRLvn_Whx_rSuM2oRNKsQqzSjh2voJwdQECcnsxgjqSLrbK5cvZwHqo9VNA-xHOfvB3F_o5ZW51wYC5Lfy14rimB8qKs-zZxRN5oh74oPIF53Nsw3Xncleg

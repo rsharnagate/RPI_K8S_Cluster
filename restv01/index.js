@@ -13,7 +13,10 @@ app.use(bodyParser.json());
 app.use('/v1/categories', require('./routes/category'));
 app.use('/v1/channels', require('./routes/channel'));
 app.use('/v1/commands', require('./routes/command'));
-app.use('/v1/publish', require('./routes/publish'));
+app.use('/v1/devtops', require('./routes/devtop'));
+app.use('/v1/pub/generic', require('./routes/generic'));
+app.use('/v1/pub/tv', require('./routes/tv'));
+app.use('/v1/devices', require('./routes/devReg'));
 
 app.use((req, res, next) => {
     const err = new Error(`${req.method} ${req.url} not found`);
@@ -35,5 +38,3 @@ app.listen(PORT, () => {
     console.log(
         `Server started on port ${PORT} | Environment : ${NODE_ENV}`);
 });
-
-

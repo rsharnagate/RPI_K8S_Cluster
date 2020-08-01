@@ -1,15 +1,25 @@
 var mqtt = require('mqtt');
-const config = require('/sl/rest/config/config.json');
 
-var client = mqtt.connect(config.MQTT_HOST || "mqtt://127.0.0.1:1883", {
-    clientId: config.MQTT_CLINTID || "RESTMqttClient",
-    username: config.MQTT_USER || undefined,
-    password: config.MQTT_PSWD || undefined,
-    clean: true
-});
+var client = null;
+
+try {
+    const config = require('/sl/rest/config/config.json');
+    client = mqtt.connect(config.MQTT_HOST || "mqtt://mosquitto.default.svc.cluster.local", {
+        clientId: config.MQTT_CLINTID || "RESTMqttClient",
+        username: config.MQTT_USER,
+        password: config.MQTT_PSWD,
+        clean: true
+    });
+} catch (err) {
+    console.error("config.json not found. Loading default values.");
+    client = mqtt.connect("mqtt://localhost", {
+        clientId: "RESTMqttClient",
+        clean: true
+    });
+}
 
 client.on("connect", () => {    
-    console.log(`REST MQTT client ${client.clientId} connected with broker`);
+    console.log(`REST MQTT client connected with broker`);
 });
 
 client.on("error", (err) => {

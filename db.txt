@@ -1,0 +1,71 @@
+CREATE TABLE `tblcategory` (
+	`cid` INT(6) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',
+	`active` TINYINT(1) NOT NULL DEFAULT '1',
+	PRIMARY KEY (`cid`) USING BTREE
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=2
+;
+
+CREATE TABLE `tblchannel` (
+	`chid` INT(6) UNSIGNED NOT NULL,
+	`name` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',
+	`logo` VARCHAR(150) NOT NULL COLLATE 'latin1_swedish_ci',
+	`cid` INT(6) NULL,
+	`active` TINYINT(1) NOT NULL DEFAULT '1',
+	PRIMARY KEY (`chid`) USING BTREE
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `tbldevices` (
+	`id` TINYINT(3) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'latin1_swedish_ci',
+	`type` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'latin1_swedish_ci',
+	`description` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'latin1_swedish_ci',
+	`manufacturer` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'latin1_swedish_ci',
+	`logo_path` VARCHAR(50) NULL DEFAULT '0' COLLATE 'latin1_swedish_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COMMENT='This table will contain device information'
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `tbldevicetopic` (
+	`id` INT(6) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`device` VARCHAR(20) NOT NULL COLLATE 'latin1_swedish_ci',
+	`topic` VARCHAR(20) NOT NULL COLLATE 'latin1_swedish_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=2
+;
+
+CREATE TABLE `tblprofile` (
+	`id` TINYINT(4) NOT NULL AUTO_INCREMENT,
+	`dev_id` TINYINT(4) NOT NULL,
+	`cmd` VARCHAR(30) NOT NULL DEFAULT '' COLLATE 'latin1_swedish_ci',
+	`val` VARCHAR(30) NULL DEFAULT '' COLLATE 'latin1_swedish_ci',
+	`keys` VARCHAR(30) NOT NULL DEFAULT '' COLLATE 'latin1_swedish_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `tblcommand` (
+	`id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`cmd` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'latin1_swedish_ci',
+	`value` VARCHAR(50) NOT NULL DEFAULT '0' COLLATE 'latin1_swedish_ci',
+	`keys` VARCHAR(50) NOT NULL DEFAULT '0' COLLATE 'latin1_swedish_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+

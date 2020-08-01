@@ -11,7 +11,7 @@ router.post('/', async (req, res, next) => {
         // Check required parameter
         if (!req.body.name) {
             var badRequest = BadRequestResult('Category name is not valid');
-            res.status(400).json(badRequest);
+            return res.status(400).json(badRequest);
         }
 
         var cName = req.body.name;
@@ -27,7 +27,7 @@ router.post('/', async (req, res, next) => {
 
         // Respond to the user
         var result = utility.Result(query, dbRes, `Channel category ${cName} created`);
-        res.status(201).json(result);
+        return res.status(201).json(result);
 
     } catch (err) {        
         return next(err);
@@ -51,10 +51,10 @@ router.get('/', async (req, res, next) => {
 
         if (dbRes.length > 0) {
             var result = utility.OkResult(query, dbRes);
-            res.status(200).json(result);
+            return res.status(200).json(result);
         } else {
             var result = utility.Result(query, dbRes, `Channel category not found`);
-            res.status(404).json(result);
+            return res.status(404).json(result);
         }
     } catch (err) {        
         return next(err);
@@ -70,7 +70,7 @@ router.get('/:cid', async (req, res, next) => {
         // Check required parameter
         if (!req.params.cid) {
             var badRequest = utility.BadRequestResult('Category id is not valid');
-            res.status(400).json(badRequest);
+            return res.status(400).json(badRequest);
         }
 
         var cid = req.params.cid;
@@ -86,10 +86,10 @@ router.get('/:cid', async (req, res, next) => {
 
         if (dbRes.length > 0) {
             var result = utility.OkResult(query, dbRes);
-            res.status(200).json(result);
+            return res.status(200).json(result);
         } else {
             var result = utility.Result(query, dbRes, `Channel category not found`);
-            res.status(404).json(result);
+            return res.status(404).json(result);
         }
     } catch (err) {        
         return next(err);
@@ -105,12 +105,12 @@ router.put('/:cid', async (req, res, next) => {
         // Check required parameter
         if (!req.params.cid) {
             var badRequest = utility.BadRequestResult('Category id is not valid');
-            res.status(400).json(badRequest);
+            return res.status(400).json(badRequest);
         }
 
         if (!req.body.name) {
             var badRequest = utility.BadRequestResult('Category name is not valid');
-            res.status(400).json(badRequest);
+            return res.status(400).json(badRequest);
         }
 
         var cid = req.params.cid;
@@ -127,10 +127,10 @@ router.put('/:cid', async (req, res, next) => {
 
         if (dbRes.affectedRows > 0) {
             var result = utility.Result(query, dbRes, `Category updated successfully`);
-            res.status(204).json(result);
+            return res.status(204).json(result);
         } else {
             var result = utility.Result(query, dbRes, `Channel category not found`);
-            res.status(404).json(result);
+            return res.status(404).json(result);
         }
     } catch (err) {        
         return next(err);
@@ -146,7 +146,7 @@ router.delete('/:cid', async (req, res, next) => {
         // Check required parameter
         if (!req.params.cid) {
             var badRequest = utility.BadRequestResult('Category id is not valid');
-            res.status(400).json(badRequest);
+            return res.status(400).json(badRequest);
         }
 
         var cid = req.params.cid;
@@ -162,10 +162,10 @@ router.delete('/:cid', async (req, res, next) => {
 
         if (dbRes.affectedRows > 0) {
             var result = utility.Result(query, dbRes, `Category disabled successfully`);
-            res.status(204).json(result);
+            return res.status(204).json(result);
         } else {
             var result = utility.Result(query, dbRes, `Channel category not found`);
-            res.status(404).json(result);
+            return res.status(404).json(result);
         }
     } catch (err) {        
         return next(err);

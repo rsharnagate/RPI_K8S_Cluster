@@ -4,45 +4,43 @@ const utility = require('../utility');
 
 var router = express.Router();
 
+// Register new device
 router.post('/', async (req, res, next) => {
     let conn;
     try {
 
         var badRequestMsg = "";
 
-        if (!req.body.number) badRequestMsg = badRequestMsg.concat('\nChannel number');
-        if (!req.body.name) badRequestMsg = badRequestMsg.concat('\nChannel name');
-        if (!req.body.logo) badRequestMsg = badRequestMsg.concat('\nChannel logo');
-        if (!req.body.cid) badRequestMsg = badRequestMsg.concat('\nChannel category id');
+        if (!req.body.name) badRequestMsg = badRequestMsg.concat('\n name');
+        if (!req.body.type) badRequestMsg = badRequestMsg.concat('\n type');
+        if (!req.body.description) badRequestMsg = badRequestMsg.concat('\n description');
+        if (!req.body.manufacturer) badRequestMsg = badRequestMsg.concat('\n manufacturer');        
 
         if (badRequestMsg) {
             badRequestMsg = 'Mandatory fields are missing:'.concat(badRequestMsg);
             var badRequest = utility.BadRequestResult(badRequestMsg);
             return res.status(400).json(badRequest);
-        }
+        }        
 
-        var number = req.body.number;
         var name = req.body.name;
-        var logo = req.body.logo;
-        var cid = req.body.cid;        
+        var type = req.body.type;
+        var description = req.body.description;
+        var manufacturer = req.body.manufacturer;
+        var logo = req.body.logo_path;
 
         // establish connection with MariaDB
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `INSERT INTO tblchannel(number,name,logo,cid) SELECT ${number},'${name}','${logo}',tblCategory.cid FROM tblCategory WHERE cid = ${cid}`;
+        var query = `INSERT INTO tbldevices(id,name,type,description,manufacturer,logo_path) VALUES (0,'${name}','${type}','${description}','${manufacturer}','${logo}')`;
 
         // Execute the query
         var dbRes = await conn.query(query);
-        
+
         // Respond to the user
-        if (dbRes.affectedRows > 0) {
-            var result = utility.Result(query, dbRes, `Channel ${name} created`);
-            return res.status(201).json(result);
-        } else {
-            var result = utility.Result(query, dbRes, `Channel category '${cid}' not found`);
-            return res.status(404).json(result);
-        }
+        var result = utility.Result(query, dbRes, `Device '${name}' register successfully`);
+        return res.status(201).json(result);
+
     } catch (err) {        
         return next(err);
     } finally {
@@ -50,6 +48,7 @@ router.post('/', async (req, res, next) => {
     }   
 });
 
+// Get all register devices
 router.get('/', async (req, res, next) => {
     let conn;
     try {
@@ -58,7 +57,7 @@ router.get('/', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `SELECT number, name, logo, cid FROM tblChannel`;
+        var query = `SELECT * FROM tbldevices`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -67,7 +66,7 @@ router.get('/', async (req, res, next) => {
             var result = utility.OkResult(query, dbRes);
             return res.status(200).json(result);
         } else {
-            var result = utility.Result(query, dbRes, `Channels not found`);
+            var result = utility.Result(query, dbRes, `Devices not found`);
             return res.status(404).json(result);
         }
     } catch (err) {        
@@ -77,23 +76,24 @@ router.get('/', async (req, res, next) => {
     }     
 });
 
-router.get('/category/:cid', async (req, res, next) => {
+// Get device by id
+router.get('/:id/id', async (req, res, next) => {
     let conn;
     try {
 
         // Check required parameter
-        if (!req.params.cid) {
-            var badRequest = utility.BadRequestResult('Category id is not valid');
+        if (!req.params.id) {
+            var badRequest = utility.BadRequestResult('Device id is not valid');
             return res.status(400).json(badRequest);
         }
 
-        var cid = req.params.cid;
+        var id = req.params.id;
 
         // establish connection with MariaDB
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `SELECT number, name, logo FROM tblChannel WHERE cid=${cid}`;
+        var query = `SELECT * FROM tbldevices WHERE id=${id}`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -102,7 +102,7 @@ router.get('/category/:cid', async (req, res, next) => {
             var result = utility.OkResult(query, dbRes);
             return res.status(200).json(result);
         } else {
-            var result = utility.Result(query, dbRes, `Channels not found for category ${cid}`);
+            var result = utility.Result(query, dbRes, `Device with id '${id}' not found`);
             return res.status(404).json(result);
         }
     } catch (err) {        
@@ -112,41 +112,8 @@ router.get('/category/:cid', async (req, res, next) => {
     }   
 });
 
-router.get('/:num/number', async (req, res, next) => {
-    let conn;
-    try {
-
-        // Check required parameter
-        if (!req.params.num) {
-            var badRequest = utility.BadRequestResult('Channel number is not valid');
-            return res.status(400).json(badRequest);
-        }
-
-        var num = req.params.num;
-
-        // establish connection with MariaDB
-        conn = await mysql.getConnection();
-
-        // Create new query
-        var query = `SELECT name, logo, cid FROM tblChannel WHERE number=${num}`;
-
-        // Execute the query
-        var dbRes = await conn.query(query);
-
-        if (dbRes.length > 0) {
-            var result = utility.OkResult(query, dbRes);
-            return res.status(200).json(result);
-        } else {
-            var result = utility.Result(query, dbRes, `Channel ${num} not found`);
-            return res.status(404).json(result);
-        }
-    } catch (err) {        
-        return next(err);
-    } finally {
-        if (conn) return conn.release();
-    }    
-});
-
+// Get device by name. 
+// This may return multiple devices coz device name is not unique.
 router.get('/:name/name', async (req, res, next) => {
     let conn;
     try {
@@ -163,7 +130,7 @@ router.get('/:name/name', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `SELECT number, name, logo, cid FROM tblChannel WHERE name LIKE '%${name}%'`;
+        var query = `SELECT * FROM tbldevices WHERE name='${name}'`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -172,7 +139,7 @@ router.get('/:name/name', async (req, res, next) => {
             var result = utility.OkResult(query, dbRes);
             return res.status(200).json(result);
         } else {
-            var result = utility.Result(query, dbRes, `Channel ${name} not found`);
+            var result = utility.Result(query, dbRes, `Device with name '${name}' not found`);
             return res.status(404).json(result);
         }
     } catch (err) {        
@@ -190,42 +157,49 @@ router.put('/:id', async (req, res, next) => {
         if (!req.params.id) {
             var badRequest = utility.BadRequestResult('Channel id is not valid');
             return res.status(400).json(badRequest);
-        }
-
-        var badRequestMsg = "";
+        }        
         
-        if (!req.body.number) badRequestMsg = badRequestMsg.concat('\nChannel number');
-        if (!req.body.name) badRequestMsg = badRequestMsg.concat('\nChannel name');
-        if (!req.body.logo) badRequestMsg = badRequestMsg.concat('\nChannel logo');
-        if (!req.body.cid) badRequestMsg = badRequestMsg.concat('\nChannel category id');
-
-        if (badRequestMsg) {
-            badRequestMsg = 'Mandatory fields are missing:'.concat(badRequestMsg);
-            var badRequest = utility.BadRequestResult(badRequestMsg);
+        if (!req.body)  {
+            var badRequest = utility.BadRequestResult('Device information is not valid');
             return res.status(400).json(badRequest);
         }
 
-        var cnum = req.params.number;
-        var cname = req.body.name;
-        var clogo = req.body.logo;
-        var cid = req.body.cid;
+        var id = req.params.id;
+
+        var query = `UPDATE tbldevices SET `;
+        
+        if (req.body.name) {
+            query = query.concat(`name='${req.body.name}',`);
+        }
+        if (req.body.type) {
+            query = query.concat(`type='${req.body.type}',`);
+        }
+        if (req.body.description) {
+            query = query.concat(`description='${req.body.description}',`);
+        }
+        if (req.body.manufacturer) {
+            query = query.concat(`manufacturer='${req.body.manufacturer}',`);
+        }
+        if (req.body.logo_path) {
+            query = query.concat(`logo_path='${req.body.logo_path}',`);
+        }
+
+        // Remove comma from the end
+        query = query.slice(0, -1);
+
+        query = query.concat(` WHERE id=${id}`);
 
         // establish connection with MariaDB
         conn = await mysql.getConnection();
-
-        // Create new query
-        var query = `UPDATE tblCategory as category, tblChannel as channel
-        SET channel.number = ${cnum}, channel.name = '${cname}', channel.logo = '${clogo}', channel.cid = ${cid} 
-        WHERE category.cid = ${cid} and id = ${id}`;
 
         // Execute the query
         var dbRes = await conn.query(query);
 
         if (dbRes.affectedRows > 0) {
-            var result = utility.Result(query, dbRes, `Channel updated successfully`);
+            var result = utility.Result(query, dbRes, `Device updated successfully`);
             return res.status(204).json(result);
         } else {
-            var result = utility.Result(query, dbRes, `Channel or channel category not found`);
+            var result = utility.Result(query, dbRes, `Device ${id} not found`);
             return res.status(404).json(result);
         }
     } catch (err) {        
@@ -241,7 +215,7 @@ router.delete('/:id', async (req, res, next) => {
 
         // Check required parameter
         if (!req.params.id) {
-            var badRequest = utility.BadRequestResult('Channel id is not valid');
+            var badRequest = utility.BadRequestResult('Device id is not valid');
             return res.status(400).json(badRequest);
         }
 
@@ -251,16 +225,16 @@ router.delete('/:id', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `DELETE FROM tblchannel WHERE id = ${id}`;
+        var query = `DELETE FROM tbldevices WHERE id=${id}`;
 
         // Execute the query
         var dbRes = await conn.query(query);
 
         if (dbRes.affectedRows > 0) {
-            var result = utility.Result(query, dbRes, `Channel deleted successfully`);
+            var result = utility.Result(query, dbRes, `Device '${id}' is deleted successfully`);
             return res.status(204).json(result);
         } else {
-            var result = utility.Result(query, dbRes, `Channel not found`);
+            var result = utility.Result(query, dbRes, `Device '${id}' is not found`);
             return res.status(404).json(result);
         }
     } catch (err) {        
