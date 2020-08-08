@@ -184,7 +184,7 @@ async function GetChannel(channel, devId) {
         // establish connection with MariaDB
         conn = await mysql.getConnection();
 
-        var query = 'SELECT number FROM tblChannel WHERE ';
+        var query = 'SELECT number FROM tblchannel WHERE ';
 
         if (isNaN(channel)) {
             query = query.concat(`name LIKE '%${channel}%'`);

@@ -11,13 +11,12 @@ Query:
 Columns:
     a. cid: Int, Unique, Primary
     b. name: String
-    d. active: bool
 Query:
-    CREATE TABLE tblCategory (
-        cid INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(50) NOT NULL,
-        active BOOLEAN NOT NULL DEFAULT True
-    )
+    CREATE TABLE `tblcategory` (
+	`cid` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(50) NOT NULL,
+	PRIMARY KEY (`cid`) USING BTREE
+    );
 Endpoints:
     a. POST <BASE_URL>/v1/categories - Insert new category
     b. GET <BASE_URL>/v1/categories - Get all categories    
@@ -33,13 +32,14 @@ Columns:
     d. cid: Int
     e. active: bool
 Query:
-    CREATE TABLE tblChannel (
-        chid INT(6) UNSIGNED PRIMARY KEY,
-        name VARCHAR(50) NOT NULL,
-        logo VARCHAR(150) NOT NULL,
-        cid INT(6),
-        active BOOLEAN NOT NULL DEFAULT True
-    )
+    CREATE TABLE `tblchannel` (
+	`id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`cid` SMALLINT(5) UNSIGNED NOT NULL DEFAULT '0',
+	`number` SMALLINT(5) UNSIGNED NOT NULL DEFAULT '0',
+	`name` VARCHAR(20) NOT NULL DEFAULT '0',
+	`logo` VARCHAR(50) NULL DEFAULT '0',
+	PRIMARY KEY (`id`) USING BTREE
+    );
 Endpoints:
     a. POST <BASE_URL>/v1/channels - Insert new channel 
     b. GET <BASE_URL>/v1/channels - Get all channels
@@ -57,12 +57,12 @@ Columns:
     d. active: bool
 
 Query:
-    CREATE TABLE tblDeviceTopic (
-        id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        device VARCHAR(20) NOT NULL,
-        topic VARCHAR(20) NOT NULL,
-        active BOOLEAN NOT NULL DEFAULT True
-    )
+    CREATE TABLE `tbldevicetopic` (
+	`id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`dev_id` SMALLINT(5) UNSIGNED NOT NULL DEFAULT '0',
+	`topic` VARCHAR(20) NOT NULL,
+	PRIMARY KEY (`id`) USING BTREE
+    );
 
 Endpoints:
     a. POST <BASE_URL>/v1/devtops - Insert new device topic mapping
@@ -78,12 +78,13 @@ Columns:
     b. key: String,
     c. active: bool
 Query:
-    CREATE TABLE tblCommand (
-        id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        cid VARCHAR(10) NOT NULL,
-        `key` VARCHAR(10) NOT NULL,
-        active BOOLEAN NOT NULL DEFAULT True
-    )
+    CREATE TABLE `tblcommand` (
+	`id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`dev_id` SMALLINT(5) UNSIGNED NOT NULL DEFAULT '0',
+	`cmd` VARCHAR(20) NOT NULL DEFAULT '0',
+	`keys` VARCHAR(40) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`) USING BTREE
+);
 Endpoints:
     a. POST <BASE_URL>/v1/commands - Insert new command 
     b. GET <BASE_URL>/v1/commands - Get all commands    
@@ -91,6 +92,18 @@ Endpoints:
     d. GET <BASE_URL>/v1/commands/{key}/key - Get command by key    
     e. PUT <BASE_URL>/v1/channels/{cid} - Update command
     f. DELETE <BASE_URL>/v1/channels/{cid} - Delete command
+
+4. tbldevices
+    CREATE TABLE `tbldevices` (
+	`id` TINYINT(3) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(20) NOT NULL DEFAULT '0',
+	`type` VARCHAR(20) NOT NULL DEFAULT '0',
+	`description` VARCHAR(50) NULL DEFAULT '0',
+	`manufacturer` VARCHAR(20) NULL DEFAULT '0',
+	`logo_path` VARCHAR(50) NULL DEFAULT '0',
+	PRIMARY KEY (`id`) USING BTREE
+);
+
 
 Eg. Publish command
 {
@@ -110,7 +123,7 @@ Eg. Publish command
 }
 
 Docker xbuild:
-docker buildx build --push --platform linux/arm/v7 --tag rsharnagate/sl-rest:lts-alpine3.9 .
+docker buildx build --push --platform linux/arm/v7 --tag rsharnagate/sl-rest:rpi .
 
 MySQL details
 ----------------

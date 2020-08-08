@@ -3,11 +3,11 @@ var mqtt = require('mqtt');
 var client = null;
 
 try {
+    // username: config.MQTT_USER,
+    // password: config.MQTT_PSWD,
     const config = require('/sl/rest/config/config.json');
     client = mqtt.connect(config.MQTT_HOST || "mqtt://mosquitto.default.svc.cluster.local", {
-        clientId: config.MQTT_CLINTID || "RESTMqttClient",
-        username: config.MQTT_USER,
-        password: config.MQTT_PSWD,
+        clientId: config.MQTT_CLINTID || "RESTMqttClient",        
         clean: true
     });
 } catch (err) {

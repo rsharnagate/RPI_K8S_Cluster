@@ -26,7 +26,7 @@ router.post('/', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `INSERT INTO tblDeviceTopic(id,dev_id,topic) SELECT 0, tbldevices.id, '${topic}' FROM tbldevices WHERE id = ${devId}`;
+        var query = `INSERT INTO tbldevicetopic(id,dev_id,topic) SELECT 0, tbldevices.id, '${topic}' FROM tbldevices WHERE id = ${devId}`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -55,7 +55,7 @@ router.get('/', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = 'SELECT * FROM tblDeviceTopic';
+        var query = 'SELECT * FROM tbldevicetopic';
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -138,8 +138,8 @@ router.put('/:device', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `UPDATE tblDeviceTopic SET topic = '${topic}' WHERE active = True and device = '${device}'`;
-        //"UPDATE tblDeviceTopic SET topic = '" + topic + "' WHERE active = True and device = '" + device + "'";
+        var query = `UPDATE tbldevicetopic SET topic = '${topic}' WHERE device = '${device}'`;
+        //"UPDATE tbldevicetopic SET topic = '" + topic + "' WHERE active = True and device = '" + device + "'";
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -175,14 +175,14 @@ router.delete('/:device', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `UPDATE tblDeviceTopic SET active = False WHERE active = True and device = '${device}'`;
+        var query = `DELETE FROM tbldevicetopic WHERE device = '${device}'`;
 
         // Execute the query
         var dbRes = await conn.query(query);
 
         // Respond to the user
         if (dbRes.affectedRows > 0) {
-            var result = utility.Result(query, dbRes, `Device mapping disabled successfully`);
+            var result = utility.Result(query, dbRes, `Device mapping deleted successfully`);
             return res.status(204).json(result);
         } else {
             var result = utility.Result(query, dbRes, `Device not found`);

@@ -30,7 +30,7 @@ router.post('/', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `INSERT INTO tblchannel(number,name,logo,cid) SELECT ${number},'${name}','${logo}',tblCategory.cid FROM tblCategory WHERE cid = ${cid}`;
+        var query = `INSERT INTO tblchannel(number,name,logo,cid) SELECT ${number},'${name}','${logo}',tblcategory.cid FROM tblcategory WHERE cid = ${cid}`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -58,7 +58,7 @@ router.get('/', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `SELECT number, name, logo, cid FROM tblChannel`;
+        var query = `SELECT number, name, logo, cid FROM tblchannel`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -93,7 +93,7 @@ router.get('/category/:cid', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `SELECT number, name, logo FROM tblChannel WHERE cid=${cid}`;
+        var query = `SELECT number, name, logo FROM tblchannel WHERE cid=${cid}`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -128,7 +128,7 @@ router.get('/:num/number', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `SELECT name, logo, cid FROM tblChannel WHERE number=${num}`;
+        var query = `SELECT name, logo, cid FROM tblchannel WHERE number=${num}`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -163,7 +163,7 @@ router.get('/:name/name', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `SELECT number, name, logo, cid FROM tblChannel WHERE name LIKE '%${name}%'`;
+        var query = `SELECT number, name, logo, cid FROM tblchannel WHERE name LIKE '%${name}%'`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -214,7 +214,7 @@ router.put('/:id', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `UPDATE tblCategory as category, tblChannel as channel
+        var query = `UPDATE tblcategory as category, tblchannel as channel
         SET channel.number = ${cnum}, channel.name = '${cname}', channel.logo = '${clogo}', channel.cid = ${cid} 
         WHERE category.cid = ${cid} and id = ${id}`;
 

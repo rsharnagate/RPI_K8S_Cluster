@@ -20,7 +20,7 @@ router.post('/', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `INSERT INTO tblCategory VALUES (0, '${cName}', True)`;
+        var query = `INSERT INTO tblcategory VALUES (0, '${cName}')`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -44,7 +44,7 @@ router.get('/', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `SELECT cid, name FROM tblCategory WHERE active = True`;
+        var query = `SELECT cid, name FROM tblcategory`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -79,7 +79,7 @@ router.get('/:cid', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `SELECT cid, name FROM tblCategory WHERE cid = ${cid} and active = True`;
+        var query = `SELECT cid, name FROM tblcategory WHERE cid = ${cid}`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -120,7 +120,7 @@ router.put('/:cid', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `UPDATE tblCategory SET name = '${cname}' WHERE active = True and cid = ${cid}`;
+        var query = `UPDATE tblcategory SET name = '${cname}' WHERE cid = ${cid}`;
 
         // Execute the query
         var dbRes = await conn.query(query);
@@ -155,7 +155,7 @@ router.delete('/:cid', async (req, res, next) => {
         conn = await mysql.getConnection();
 
         // Create new query
-        var query = `UPDATE tblCategory SET active = False WHERE active = True and cid = ${cid}`;
+        var query = `DELETE FROM UPDATE tblcategory WHERE cid = ${cid}`;
 
         // Execute the query
         var dbRes = await conn.query(query);

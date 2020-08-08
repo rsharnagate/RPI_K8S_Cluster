@@ -48,7 +48,7 @@ module.exports = {
             conn = await mysql.getConnection();
     
             // Create new query
-            var query = `SELECT topic FROM tblDeviceTopic WHERE dev_id = '${devId}'`;
+            var query = `SELECT topic FROM tbldevicetopic WHERE dev_id = '${devId}'`;
     
             // Execute the query
             var dbRes = await conn.query(query);
